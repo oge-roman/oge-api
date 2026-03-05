@@ -1,0 +1,16 @@
+{
+  "name": "oge-api",
+  "version": "1.0.0",
+  "description": "OGE social studies AI helper",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^4.18.2",
+    "node-fetch": "^2.7.0"
+  }
+}

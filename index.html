@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>ОГЭ — Поиск терминов</title>
+  <style>
+    body {
+      font-family: Arial;
+      max-width: 800px;
+      margin: 50px auto;
+    }
+    input {
+      width: 70%;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    pre {
+      white-space: pre-wrap;
+      background: #f4f4f4;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📘 Подготовка к ОГЭ</h1>
+
+  <input type="text" id="term" placeholder="Введите термин...">
+  <button onclick="search()">Найти</button>
+
+  <pre id="result"></pre>
+
+  <script>
+    async function search() {
+      const term = document.getElementById("term").value;
+      const result = document.getElementById("result");
+
+      result.textContent = "Загрузка...";
+
+      const response = await fetch(`/search?q=${term}`);
+      const text = await response.text();
+
+      result.textContent = text;
+    }
+  </script>
+
+</body>
+</html>
