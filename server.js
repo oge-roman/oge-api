@@ -75,7 +75,6 @@ app.get("/search", async (req, res) => {
       return res.json({ answer: "Модель не вернула ответ" });
     }
 
-    // Подстраховка по длине
     if (text.length > 1500) {
       text = text.substring(0, 1500) + "...";
     }
@@ -87,6 +86,9 @@ app.get("/search", async (req, res) => {
   }
 });
 
-app.listen(3001, () => {
-  console.log("Сервер запущен на http://localhost:3001");
+// ВАЖНО: Render передаёт порт через process.env.PORT
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+  console.log(`Сервер запущен на порту ${PORT}`);
 });
