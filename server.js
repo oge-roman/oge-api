@@ -5,21 +5,21 @@ const fetch = require("node-fetch");
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const HF_TOKEN = process.env.HF_TOKEN;
 
-// Ограничение по длине ответа
 const MAX_TOKENS = 400;
-
-// Простейший лимит на количество запросов (на сервер)
 let requestCount = 0;
-const DAILY_LIMIT = 300; // пока тестируем
+const DAILY_LIMIT = 300;
+
+app.get("/", (req, res) => {
+  res.send("API работает. Используйте /search?q=ваш_запрос");
+});
 
 app.get("/search", async (req, res) => {
   if (requestCount >= DAILY_LIMIT) {
-    return res.json({
-      answer: "Лимит тестирования на сегодня исчерпан."
-    });
+    return res.json({ answer: "Лимит тестирования на сегодня исчерпан." });
   }
 
   const query = req.query.q;
@@ -31,37 +31,28 @@ app.get("/search", async (req, res) => {
   requestCount++;
 
   try {
-    const hfResponse = await fetch(
-      "https://router.huggingface.co/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${HF_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "meta-llama/Meta-Llama-3-8B-Instruct",
-          messages: [
-            {
-              role: "system",
-              content: `
-Ты помощник по обществознанию для подготовки к ОГЭ.
-Отвечай кратко, по делу.
-Если это термин — дай чёткое определение.
-Если это вопрос — объясни простыми словами.
-Старайся укладываться в 8–10 предложений.
-`
-            },
-            {
-              role: "user",
-              content: query
-            }
-          ],
-          max_tokens: MAX_TOKENS,
-          temperature: 0.4
-        })
-      }
-    );
+    const hfResponse = await fetch("https://router.huggingface.co/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${HF_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "meta-llama/Meta-Llama-3-8B-Instruct",
+        messages: [
+          {
+            role: "system",
+            content: "Ты помощник по обществознанию для подготовки к ОГЭ. Отвечай кратко, по делу. Если это термин — дай чёткое определение. Если это вопрос — объясни простыми словами. Старайся укладываться в 8–10 предложений."
+          },
+          {
+            role: "user",
+            content: query
+          }
+        ],
+        max_tokens: MAX_TOKENS,
+        temperature: 0.4
+      })
+    });
 
     const data = await hfResponse.json();
 
@@ -86,7 +77,6 @@ app.get("/search", async (req, res) => {
   }
 });
 
-// ВАЖНО: Render передаёт порт через process.env.PORT
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
